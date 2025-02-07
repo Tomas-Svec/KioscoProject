@@ -8,14 +8,16 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'auth/login',
-    loadComponent: () =>
-      import('./modules/auth/login/login.component').then((m) => m.LoginComponent),
+    path: 'auth',
+    loadChildren: () =>
+      import('./modules/auth/auth.module').then((m) => m.AuthModule),
   },
   {
     path: 'dashboard',
     loadComponent: () =>
-      import('../app/modules/dashboard/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+      import('./modules/dashboard/dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent
+      ),
     canActivate: [AuthGuard], // Protege esta ruta con el guard
   },
   {

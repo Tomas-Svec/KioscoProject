@@ -1,13 +1,19 @@
-import { FormsModule } from '@angular/forms';
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { NgIf } from '@angular/common';
+import { RouteNavigatorService } from '../../../core/services/route-navigator.service';
+import { CommonModule, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+
 
 @Component({
+  
   selector: 'app-login',
   standalone: true,
-  imports: [NgIf, FormsModule], // Agrega NgIf aquí
+  imports: [
+    NgIf,
+    CommonModule,
+    FormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
@@ -16,17 +22,27 @@ export class LoginComponent {
   password: string = '';
   errorMessage: string = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private routeNavigator: RouteNavigatorService
+  ) {}
 
   onSubmit(): void {
-    this.authService.login(this.email, this.password).subscribe(
-      (response) => {
+    this.authService.login(this.email, this.password).subscribe({
+      next : (response) => {
         this.authService.saveUserData(response);
-        this.router.navigate(['/dashboard']); // Redirige al dashboard después del login
+        this.routeNavigator.navigateToDashboard(); // Navega al dashboard
       },
-      (error) => {
+      error: (error) => {
         this.errorMessage = 'Credenciales inválidas';
       }
-    );
+    });
+  }
+
+  
+  
+
+  goToRegister(): void {
+    this.routeNavigator.navigateToRegister(); // Navega al registro
   }
 }
