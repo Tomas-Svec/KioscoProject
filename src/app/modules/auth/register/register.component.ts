@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { NgIf } from '@angular/common';
 import { RouteNavigatorService } from '../../../core/services/route-navigator.service';

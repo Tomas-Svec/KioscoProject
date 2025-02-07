@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { RouteNavigatorService } from '../../../core/services/route-navigator.service';
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common'; // Importa CommonModule
 import { FormsModule } from '@angular/forms';
 
 
