@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
-import { NgIf } from '@angular/common';
+import { NgIf } from '@angular/common'; // Importa NgIf
 import { RouteNavigatorService } from '../../../core/services/route-navigator.service';
-
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [NgIf, FormsModule],
+  imports: [ NgIf,FormsModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
 })
@@ -17,7 +16,7 @@ export class RegisterComponent {
   apellido: string = '';
   email: string = '';
   password: string = '';
-  role: string = 'Empleado'; // Valor predeterminado
+  rol: string = 'Empleado'; // Valor predeterminado
   refreshToken: string = ''; // Generar automáticamente o dejar vacío
   refreshTokenExpiry: Date = new Date(); // Fecha de expiración del refresh token
   errorMessage: string = '';
@@ -34,22 +33,14 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
-    const userData = {
-        email: this.email,
-        password: this.password,
-        rol: this.role
-    };
-  
-    this.authService.register(userData).subscribe(
-        (response) => {
-            console.log('Usuario registrado:', response);
-            this.routeNavigator.navigateToLogin();
-        },
-        (error) => {
-            console.error('Error al registrar el usuario:', error);
-            this.errorMessage = 'Error al registrar el usuario';
-        }
-    );
+    this.authService.register(this.nombre, this.apellido, this.email, this.password, this.rol).subscribe({
+      next: () => {
+        this.routeNavigator.navigateToLogin(); // Redirigir al login después del registro
+      },
+      error: (error) => {
+        this.errorMessage = 'Error al registrar el usuario';
+      }
+    });
   }
 
   goToLogin(): void {

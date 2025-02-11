@@ -1,17 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class', // ✅ Habilita el modo oscuro basado en clases
   content: [
-    "./src/**/*.{html,ts}", // Escanea todos los archivos HTML y TypeScript
+    "./src/**/*.{html,ts}",
   ],
   theme: {
-    extend: {
-      colors: {
-        primary: "#007bff",
-        secondary: "#6c757d",
-        success: "#28a745",
-        danger: "#dc3545",
-      }
-    }, // Aquí puedes extender o personalizar el tema predeterminado
+    extend: {},
   },
-  plugins: [], // Puedes agregar plugins si es necesario
+  plugins: [],
 };

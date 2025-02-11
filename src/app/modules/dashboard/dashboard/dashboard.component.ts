@@ -3,11 +3,13 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
+import {app-sale-hostory} from '../../../modules/sale-hostory/sale-hostory.component';
+
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [],
+  imports: [app-sale-hostory],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
@@ -16,18 +18,11 @@ export class DashboardComponent {
 
   constructor(
     private authService: AuthService,
-    private themeService: ThemeService
   ) {
   
   }
 
-  ngOnInit(): void {
-    // Suscribirse a cambios en el tema
-    this.themeService.isDarkTheme$.subscribe((isDark) => {
-      const theme = isDark ? 'dark' : 'light';
-      document.body.setAttribute('data-theme', theme);
-    });
-  }
+ 
 
   logout(): void {
     this.authService.logout();

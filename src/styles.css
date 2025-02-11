@@ -1,26 +1,8 @@
-/* src/styles.css */
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* src/styles.css */
-:root {
-  --primary-bg: #ffffff;
-  --primary-text: #000000;
-  --header-bg: #f8f9fa;
-  --header-text: #000000;
-}
-
-[data-theme="dark"] {
-  --primary-bg: #121212;
-  --primary-text: #ffffff;
-  --header-bg: #1f1f1f;
-  --header-text: #ffffff;
-}
-
+/* Ajustes generales */
 body {
-  background-color: var(--primary-bg);
-  color: var(--primary-text);
-  transition: background-color 0.3s, color 0.3s;
+  @apply bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100;
 }

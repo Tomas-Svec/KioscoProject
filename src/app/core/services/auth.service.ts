@@ -22,14 +22,16 @@ export class AuthService {
 
   // Método para iniciar sesión
   login(email: string, password: string): Observable<AuthResponse> {
-    const loginData = { email, password };
+    const loginData = { email, password }; //  Solo estos dos campos
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, loginData);
   }
 
    // Método para registrar un nuevo usuario
-   register(userData: any): Observable<any> {
+   register(nombre: string, apellido: string, email: string, password: string, rol: string): Observable<any> {
+    const userData = { nombre, apellido, email, password, rol }; // Incluye el rol
     return this.http.post(`${this.apiUrl}/auth/register`, userData);
   }
+  
 
   // Método para cerrar sesión
 logout(): void {

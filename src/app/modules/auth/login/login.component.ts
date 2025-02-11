@@ -13,39 +13,33 @@ import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ThemeService } from '../../../core/services/theme.service';
 
+
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     NgIf,
     CommonModule,
-    FormsModule,
-    HeaderComponent, // Añade HeaderComponent aquí
+    FormsModule, // Añade HeaderComponent aquí
     ButtonComponent  // Añade ButtonComponent aquí
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
+  nombre: string = '';
+  apellido: string = '';
   email: string = '';
   password: string = '';
   errorMessage: string = '';
-  isDarkMode: boolean = false;
 
   constructor(
-    private themeService: ThemeService,
+    public themeService: ThemeService,
     private authService: AuthService,
     private routeNavigator: RouteNavigatorService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object // ✅ Inyectar PLATFORM_ID
   ) {}
 
-  ngOnInit(): void {
-    // Suscribirse a cambios en el tema
-    this.themeService.isDarkTheme$.subscribe((isDark) => {
-      const theme = isDark ? 'dark' : 'light';
-      document.body.setAttribute('data-theme', theme);
-    });
-  }
 
   onSubmit(): void {
     if (isPlatformBrowser(this.platformId)) {

@@ -1,23 +1,34 @@
-// src/app/core/services/theme.service.ts
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ThemeService {
-  private isDarkTheme = new BehaviorSubject<boolean>(false); // Tema claro por defecto
-  isDarkTheme$ = this.isDarkTheme.asObservable(); // Observable para suscribirse a cambios
+  private darkModeKey = 'dark-mode';
 
-  constructor() {}
-
-  // Cambiar entre modo oscuro y claro
-  toggleTheme(): void {
-    this.isDarkTheme.next(!this.isDarkTheme.value);
+  constructor(@Inject(PLATFORM_ID) private platformId: any) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadTheme(); // Solo carga el tema si está en el navegador
+    }
   }
 
-  // Obtener el estado actual del tema
-  getCurrentTheme(): boolean {
-    return this.isDarkTheme.value;
+  toggleDarkMode(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      document.documentElement.classList.toggle('dark');
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      localStorage.setItem(this.darkModeKey, JSON.stringify(isDarkMode));
+    }
+  }
+
+  private loadTheme(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedTheme = localStorage.getItem(this.darkModeKey);
+      if (savedTheme && JSON.parse(savedTheme)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
   }
 }
