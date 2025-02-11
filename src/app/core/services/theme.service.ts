@@ -1,38 +1,23 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+// src/app/core/services/theme.service.ts
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
-  private currentTheme: string = 'light'; // Tema predeterminado
+  private isDarkTheme = new BehaviorSubject<boolean>(false); // Tema claro por defecto
+  isDarkTheme$ = this.isDarkTheme.asObservable(); // Observable para suscribirse a cambios
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    if (isPlatformBrowser(this.platformId)) {
-      const savedTheme = localStorage.getItem('theme');
-      this.currentTheme = savedTheme || 'light';
-      this.applyTheme(this.currentTheme);
-    }
-  }
+  constructor() {}
 
-  // Método para alternar entre temas
+  // Cambiar entre modo oscuro y claro
   toggleTheme(): void {
-    this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
-    this.applyTheme(this.currentTheme);
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('theme', this.currentTheme); // Guarda el tema en localStorage
-    }
+    this.isDarkTheme.next(!this.isDarkTheme.value);
   }
 
-  // Método privado para aplicar el tema
-  private applyTheme(theme: string): void {
-    if (isPlatformBrowser(this.platformId)) {
-      document.body.className = theme; // Aplica la clase al body
-    }
-  }
-
-  // Método para obtener el tema actual
-  getTheme(): string {
-    return this.currentTheme;
+  // Obtener el estado actual del tema
+  getCurrentTheme(): boolean {
+    return this.isDarkTheme.value;
   }
 }

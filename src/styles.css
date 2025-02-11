@@ -4,16 +4,23 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Variables globales para el tema light */
+/* src/styles.css */
 :root {
-    --background-color: #ffffff;
-    --text-color: #000000;
-    --primary-color: #007bff;
-  }
-  
-  /* Variables globales para el tema dark */
-  [data-theme="dark"] {
-    --background-color: #121212;
-    --text-color: #ffffff;
-    --primary-color: #bb86fc;
-  }
+  --primary-bg: #ffffff;
+  --primary-text: #000000;
+  --header-bg: #f8f9fa;
+  --header-text: #000000;
+}
+
+[data-theme="dark"] {
+  --primary-bg: #121212;
+  --primary-text: #ffffff;
+  --header-bg: #1f1f1f;
+  --header-text: #ffffff;
+}
+
+body {
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  transition: background-color 0.3s, color 0.3s;
+}

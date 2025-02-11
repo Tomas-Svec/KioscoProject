@@ -1,31 +1,8 @@
+/* src/app/modules/dashboard/dashboard/dashboard.component.css */
 .dashboard-container {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  background-color: inherit; /* Hereda el fondo del body */
-}
-
-/* Personalización adicional para el modo oscuro */
-body.dark-mode .login-container {
-  border-color: #444; /* Borde más claro en modo oscuro */
-  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1); /* Sombra más clara */
-}
-
-.btn {
-  background-color: var(--button-bg);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn:hover {
-  background-color: var(--button-hover-bg);
-}
-
-.error {
-  color: var(--error-color);
 }

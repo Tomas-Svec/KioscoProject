@@ -1,3 +1,7 @@
+<!-- src/app/core/components/header/header.component.html -->
 <header>
-    <button (click)="toggleTheme()">Alternar Tema</button>
-  </header>
+  <h1>Mi Aplicación</h1>
+  <button (click)="toggleTheme()">
+    {{ isDarkTheme ? 'Modo Claro' : 'Modo Oscuro' }}
+  </button>
+</header>

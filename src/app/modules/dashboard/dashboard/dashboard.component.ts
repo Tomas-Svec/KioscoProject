@@ -18,12 +18,15 @@ export class DashboardComponent {
     private authService: AuthService,
     private themeService: ThemeService
   ) {
-    this.isDarkMode = this.themeService.getTheme() === 'dark';
+  
   }
 
-  toggleTheme(): void {
-    this.themeService.toggleTheme();
-    this.isDarkMode = !this.isDarkMode;
+  ngOnInit(): void {
+    // Suscribirse a cambios en el tema
+    this.themeService.isDarkTheme$.subscribe((isDark) => {
+      const theme = isDark ? 'dark' : 'light';
+      document.body.setAttribute('data-theme', theme);
+    });
   }
 
   logout(): void {

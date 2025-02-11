@@ -1,5 +1,6 @@
+// src/app/core/components/header/header.component.ts
 import { Component } from '@angular/core';
-import { ThemeService } from '../../../core/services/theme.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +12,13 @@ import { ThemeService } from '../../../core/services/theme.service';
 export class HeaderComponent {
   constructor(private themeService: ThemeService) {}
 
+  // Alternar entre modo oscuro y claro
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+
+  // Obtener el estado actual del tema
+  get isDarkTheme(): boolean {
+    return this.themeService.getCurrentTheme();
   }
 }

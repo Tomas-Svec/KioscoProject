@@ -11,6 +11,7 @@ import { ButtonComponent } from '../../../core/components/button/button.componen
 
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-login',
@@ -29,26 +30,21 @@ export class LoginComponent {
   email: string = '';
   password: string = '';
   errorMessage: string = '';
-  isDarkMode: boolean = false; // Estado del modo oscuro
+  isDarkMode: boolean = false;
 
   constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
+    private themeService: ThemeService,
     private authService: AuthService,
-    private routeNavigator: RouteNavigatorService
+    private routeNavigator: RouteNavigatorService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
-  toggleTheme(): void {
-    this.isDarkMode = !this.isDarkMode;
-    this.applyTheme();
-    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light'); // Guardar el tema en localStorage
-  }
-
-  applyTheme(): void {
-    if (this.isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+  ngOnInit(): void {
+    // Suscribirse a cambios en el tema
+    this.themeService.isDarkTheme$.subscribe((isDark) => {
+      const theme = isDark ? 'dark' : 'light';
+      document.body.setAttribute('data-theme', theme);
+    });
   }
 
   onSubmit(): void {
