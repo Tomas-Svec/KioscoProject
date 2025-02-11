@@ -7,6 +7,6 @@ import { routes } from './app/app.routes';
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
-    provideHttpClient(withFetch()), // Agrega withFetch aquí
+    provideHttpClient(withFetch()), 
   ],
 }).catch((err) => console.error(err));

@@ -1,1 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
+/* src/styles.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Variables globales para el tema light */
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --primary-color: #007bff;
+  }
+  
+  /* Variables globales para el tema dark */
+  [data-theme="dark"] {
+    --background-color: #121212;
+    --text-color: #ffffff;
+    --primary-color: #bb86fc;
+  }
