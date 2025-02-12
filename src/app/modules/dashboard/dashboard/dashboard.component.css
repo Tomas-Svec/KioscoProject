@@ -1,23 +1,14 @@
-.dashboard {
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
-
-body.dark-mode .dashboard {
-  border: 1px solid #444;
-}
-
-
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh; /* Cambié 'height' a 'min-height' para permitir que el contenedor crezca */
 }
 
 .content {
   display: flex;
   flex: 1;
   padding: 20px;
+  overflow-y: auto; /* Agrega esta propiedad para permitir el desplazamiento */
 }
 
 .left-section {
@@ -31,4 +22,8 @@ body.dark-mode .dashboard {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px;
+}
+
+.dashboard-container > button {
+  margin-top: 20px;
 }
