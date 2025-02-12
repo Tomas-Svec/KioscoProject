@@ -9,6 +9,7 @@ body {
   padding: 0; /* Elimina cualquier padding por defecto */
   font-family: Roboto, "Helvetica Neue", sans-serif;
   min-height: 100vh; /* Esto permite que el body ocupe al menos toda la altura de la pantalla */
+  min-width: 100vh; 
   overflow-x: hidden; /* Evita que haya desplazamiento horizontal */
   display: flex; /* Para manejar el contenido de manera más flexible */
   flex-direction: column; /* Asegura que los elementos hijos se alineen en columna */

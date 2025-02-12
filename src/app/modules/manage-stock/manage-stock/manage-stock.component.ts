@@ -3,8 +3,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { RouteNavigatorService } from '../../../core/services/route-navigator.service';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
-
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-manage-stock',
@@ -25,18 +24,24 @@ export class ManageStockComponent implements OnInit {
   showProductForm = false; // Controla la visibilidad del formulario de productos
   currentCategory: any = {}; // Objeto para almacenar los datos de la categoría actual
   showModal = false; // Controla la visibilidad del modal general
+  // Propiedades para el filtro y búsqueda
+  selectedCategory: number | null = null; // ID de la categoría seleccionada
+  searchTerm: string = ''; // Término de búsqueda por nombre
   
 
   constructor(
     private apiService: ApiService,
     private routeNavigator: RouteNavigatorService,
-    private location: Location
+    private location: Location,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.loadProducts();
-    this.loadCategories();
+    this.loadProducts(); // Cargar productos
+    this.loadCategories(); // Cargar categorías
   }
+
+  
 
   
 
@@ -53,17 +58,20 @@ export class ManageStockComponent implements OnInit {
     );
   }
 
+  
   // Cargar categorías desde el backend
   loadCategories(): void {
     this.apiService.getCategories().subscribe(
       (data) => {
-        this.categorias = data;
+        this.categorias = data; // Almacena las categorías en el array
+        console.log('Categorías cargadas:', this.categorias);
       },
       (error) => {
         console.error('Error al cargar categorías:', error);
       }
     );
   }
+  
 
   // Lógica para abrir y cerrar el modal general
   openModal() {
@@ -111,6 +119,12 @@ export class ManageStockComponent implements OnInit {
         }
       );
     }
+  }
+
+  // Después de cambiar selectedCategory
+  onCategoryChange() {
+    this.selectedCategory = this.selectedCategory ? parseInt(this.selectedCategory.toString(), 10) : null;
+    this.cdr.detectChanges(); // Forzar detección de cambios
   }
 
   // Editar una categoría
@@ -163,6 +177,49 @@ export class ManageStockComponent implements OnInit {
     return categoria ? categoria.nombre : 'Sin categoría';
   }
 
+
+
+ // Método para obtener los productos filtrados
+ get filteredProducts(): any[] {
+  let products = this.productos;
+
+  console.log('Productos originales:', products);
+  console.log('Categoría seleccionada:', this.selectedCategory);
+
+  // Filtrar por categoría
+  if (this.selectedCategory !== null) { // Solo filtra si hay una categoría seleccionada
+    products = products.filter(producto => {
+      console.log(
+        'Comparando:',
+        'categoriaId:', producto.categoriaId,
+        'selectedCategory:', this.selectedCategory,
+        'Coinciden:', producto.categoriaId === this.selectedCategory
+      );
+      return producto.categoriaId === this.selectedCategory;
+    });
+  } else {
+    console.log('No se aplica filtro por categoría (Todas las categorías)');
+  }
+
+  // Filtrar por nombre
+  if (this.searchTerm.trim() !== '') {
+    products = products.filter(producto =>
+      producto.nombre.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
+  }
+
+  console.log('Productos filtrados:', products);
+  return products;
+}
+
+
+// Método para limpiar todos los filtros
+clearFilters(): void {
+  this.selectedCategory = null; // Reinicia la categoría seleccionada
+  this.searchTerm = ''; // Limpia el término de búsqueda
+  console.log('Filtros limpiados');
+  this.cdr.detectChanges(); // Forzar detección de cambios
+}
  
 
   // Enviar el formulario de producto

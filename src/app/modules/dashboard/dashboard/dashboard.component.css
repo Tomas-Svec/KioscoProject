@@ -1,14 +1,14 @@
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Cambié 'height' a 'min-height' para permitir que el contenedor crezca */
+  min-height: 100vh; /* Permite que el contenedor crezca */
+  min-width: 100vh;
 }
 
 .content {
   display: flex;
-  flex: 1;
   padding: 20px;
-  overflow-y: auto; /* Agrega esta propiedad para permitir el desplazamiento */
+  overflow-y: auto; /* Permite el desplazamiento si es necesario */
 }
 
 .left-section {
@@ -26,4 +26,27 @@
 
 .dashboard-container > button {
   margin-top: 20px;
+}
+
+
+/* Estilos personalizados para el contenedor del diálogo */
+.custom-dialog-container .mat-dialog-container {
+  background-color: #f9f9f9; /* Cambia el fondo */
+  border-radius: 12px; /* Agrega bordes redondeados */
+  padding: 20px; /* Espaciado interno */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
+}
+
+/* Ajusta el contenido del diálogo */
+.custom-dialog-container .content {
+  max-height: 70vh; /* Altura máxima del contenido */
+  overflow-y: auto; /* Barra de desplazamiento vertical si es necesario */
+}
+
+/* Estilos específicos para móviles */
+@media (max-width: 768px) {
+  .custom-dialog-container .mat-dialog-container {
+    border-radius: 0; /* Quita bordes redondeados en móviles */
+    padding: 10px; /* Reduce el espaciado interno */
+  }
 }

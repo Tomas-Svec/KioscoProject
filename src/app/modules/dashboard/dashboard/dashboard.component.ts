@@ -5,6 +5,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { ManageStockComponent } from "../../manage-stock/manage-stock/manage-stock.component";
 import { MatDialog } from '@angular/material/dialog';
+import { RouteNavigatorService } from '../../../core/services/route-navigator.service';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 
 
@@ -20,15 +22,28 @@ export class DashboardComponent {
 
   constructor(
     private authService: AuthService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private routeNavigator: RouteNavigatorService,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
   
   openManageStockModal(): void {
-    this.dialog.open(ManageStockComponent, {
-      width: '600px',
-    });
+    const isMobile = this.breakpointObserver.isMatched('(max-width: 768px)'); // Detecta si es móvil
+
+    const dialogConfig = {
+      width: isMobile ? '95%' : '80%', // Ancho para móviles y escritorios
+      height: isMobile ? '90%' : '80%', // Altura para móviles y escritorios
+      maxWidth: isMobile ? 'none' : '1200px', // Máximo ancho (ninguno para móviles)
+      maxHeight: isMobile ? 'none' : '90vh', // Máxima altura (ninguna para móviles)
+      panelClass: 'custom-dialog-container', // Clase personalizada
+    };
+
+    this.dialog.open(ManageStockComponent, dialogConfig);
   }
+
+
+
 
   logout(): void {
     this.authService.logout();

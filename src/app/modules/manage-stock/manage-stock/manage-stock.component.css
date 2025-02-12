@@ -1,26 +1,18 @@
-/* Estilos para el modal (manage-stock) */
-.manage-stock-modal {
-    position: fixed; /* Fija el modal en la pantalla */
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Asegúrate de que el modal esté por encima de otros contenidos */
+/* Reducir el tamaño de fuente en móviles */
+@media (max-width: 768px) {
+  .dialog-content h2 {
+    font-size: 18px;
   }
-  
-  .modal-content {
-    background-color: #fff;
-    border-radius: 8px;
-    width: 80%; /* Ajusta el ancho del modal según sea necesario */
-    max-height: 90vh; /* Asegúrate de que el modal no ocupe más del 90% de la altura de la ventana */
-    overflow-y: auto; /* Permite el desplazamiento vertical cuando el contenido exceda el alto del modal */
-    padding: 20px;
+
+  .dialog-content table {
+    font-size: 14px;
   }
-  
+
+  .dialog-content th,
+  .dialog-content td {
+    padding: 8px;
+  }
+}
   /* Si necesitas que el fondo del modal sea más oscuro o con otro efecto visual */
   .manage-stock-modal .modal-content {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

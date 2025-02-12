@@ -18,4 +18,8 @@ export class RouteNavigatorService {
   navigateToDashboard(): void {
     this.router.navigate(['/dashboard']);
   }
+
+  navigateManageStock(): void {
+    this.router.navigate(['/manage-stock']);
+  }
 }
