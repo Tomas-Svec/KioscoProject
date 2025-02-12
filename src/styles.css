@@ -9,7 +9,6 @@ body {
   padding: 0; /* Elimina cualquier padding por defecto */
   font-family: Roboto, "Helvetica Neue", sans-serif;
   min-height: 100vh; /* Esto permite que el body ocupe al menos toda la altura de la pantalla */
-  min-width: 100vh; 
   overflow-x: hidden; /* Evita que haya desplazamiento horizontal */
   display: flex; /* Para manejar el contenido de manera más flexible */
   flex-direction: column; /* Asegura que los elementos hijos se alineen en columna */
@@ -19,36 +18,3 @@ html {
   scroll-behavior: smooth; /* Facilita el desplazamiento suave */
 }
 
-.dashboard-container {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1; /* Asegura que el contenedor crezca si es necesario */
-  padding: 20px; /* Agrega un padding a los lados del contenedor */
-  margin: 20px; /* Agrega márgenes para que el contenido no quede pegado a los bordes */
-}
-
-.content {
-  display: flex;
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto; /* Agrega desplazamiento solo vertical si el contenido excede */
-  flex-direction: column; /* Para que las secciones internas se alineen en columna */
-}
-
-.left-section {
-  flex: 2;
-  margin-right: 20px;
-}
-
-.right-section {
-  flex: 1;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-}
-
-/* Para cualquier botón en el dashboard */
-.dashboard-container > button {
-  margin-top: 20px;
-}

@@ -1,34 +1,3 @@
-.dashboard-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* Permite que el contenedor crezca */
-  min-width: 100vh;
-}
-
-.content {
-  display: flex;
-  padding: 20px;
-  overflow-y: auto; /* Permite el desplazamiento si es necesario */
-}
-
-.left-section {
-  flex: 2;
-  margin-right: 20px;
-}
-
-.right-section {
-  flex: 1;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-}
-
-.dashboard-container > button {
-  margin-top: 20px;
-}
-
-
 /* Estilos personalizados para el contenedor del diálogo */
 .custom-dialog-container .mat-dialog-container {
   background-color: #f9f9f9; /* Cambia el fondo */
