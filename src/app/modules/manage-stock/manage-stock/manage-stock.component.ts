@@ -167,29 +167,42 @@ export class ManageStockComponent implements OnInit {
 
   // Enviar el formulario de producto
   onSubmit(): void {
-    if (!this.selectedProduct.categoriaId) {
-      alert('Por favor, selecciona una categoría.');
+    // Validar que todos los campos requeridos estén completos
+    if (!this.selectedProduct.nombre || !this.selectedProduct.precio || !this.selectedProduct.stock || !this.selectedProduct.categoriaId) {
+      alert('Por favor, completa todos los campos obligatorios.');
       return;
     }
   
+    // Validar que el precio sea mayor que 0
+    if (this.selectedProduct.precio <= 0) {
+      alert('El precio debe ser mayor que 0.');
+      return;
+    }
+  
+  
+    // Si el producto tiene un ID, actualízalo; de lo contrario, créalo
     if (this.selectedProduct.id) {
       this.apiService.updateProduct(this.selectedProduct.id, this.selectedProduct).subscribe(
         () => {
+          alert('Producto actualizado correctamente.');
           this.loadProducts();
           this.selectedProduct = {};
         },
         (error) => {
           console.error('Error al actualizar producto:', error);
+          alert('Hubo un error al actualizar el producto.');
         }
       );
     } else {
       this.apiService.createProduct(this.selectedProduct).subscribe(
         () => {
+          alert('Producto creado correctamente.');
           this.loadProducts();
           this.selectedProduct = {};
         },
         (error) => {
           console.error('Error al crear producto:', error);
+          alert('Hubo un error al crear el producto.');
         }
       );
     }
