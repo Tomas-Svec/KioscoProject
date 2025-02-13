@@ -1,6 +1,6 @@
 /* src/app/modules/dashboard/dashboard/dashboard.component.ts */
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { ManageStockComponent } from "../../manage-stock/manage-stock/manage-stock.component";
@@ -9,38 +9,48 @@ import { MatDialog } from '@angular/material/dialog';
 import { RouteNavigatorService } from '../../../core/services/route-navigator.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { DiscountModalComponent } from '../discount-modal/discount-modal.component';
-
+import { ConfirmSaleModalComponent } from '../confirm-sale-modal/confirm-sale-modal.component';
+import { ApiService } from '../../../core/services/api.service';
+import { CompleteSaleDto } from '../../../core/services/CompleteSaleDto';
 
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    ManageStockComponent,
+
     AddSaleModalComponent,
     DiscountModalComponent,
+    ConfirmSaleModalComponent,
     CommonModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   isDarkMode: boolean = false;
   ventas: any[] = []; // Historial de ventas
   cartItems: any[] = []; // Productos en el carrito
   total: number = 0; // Total de la venta actual
   productos: any[] = []; // Productos en stock
-  
+  currentUser: any;
 
   constructor(
     private authService: AuthService,
     public dialog: MatDialog,
     private routeNavigator: RouteNavigatorService,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    private apiService: ApiService, // Agrega el servicio de API
+  private themeService: ThemeService // Agrega el servicio de tema
   ) {}
 
   ngOnInit(): void {
-    this.loadSalesHistory(); // Cargar historial de ventas
+    // Carga el historial de ventas y otros datos necesarios
+    this.loadSalesHistory();
+    // Fecha la información del usuario al inicializar el componente
+    this.authService.getCurrentUser().subscribe(user => {
+      this.currentUser = user;
+    });
   }
 
    // Método para agregar un producto al carrito
@@ -191,6 +201,80 @@ decrementQuantity(item: any): void {
 
     this.dialog.open(ManageStockComponent, dialogConfig);
   }
+
+
+
+
+
+  //Modal de venta:
+ // Nuevo método para abrir el modal
+ openConfirmSaleModal() {
+  const saleData = {
+    items: this.cartItems,
+    total: this.total,
+    user: this.currentUser,
+    date: new Date()
+  };
+
+  const dialogRef = this.dialog.open(ConfirmSaleModalComponent, {
+    width: '600px',
+    data: saleData
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.finalizeSale();
+    }
+  });
+}
+
+// Método para finalizar la venta
+finalizeSale() {
+  const completeSaleDto: CompleteSaleDto = {
+    EmpleadoId: this.currentUser?.id || 0,
+    Total: this.total,
+    Descuento: 0,
+    Detalles: this.cartItems.map(item => ({
+      ProductoId: item.id,
+      Cantidad: item.cantidad,
+      PrecioUnitario: item.precio
+    }))
+  };
+
+  // Llama al backend para procesar la venta
+  this.apiService.completeSale(completeSaleDto).subscribe({
+    next: (response) => {
+      this.ventas.push(response);
+      this.updateProductStock();
+      this.cartItems = [];
+      this.total = 0;
+      //this.themeService.showSnackbar('Venta finalizada con éxito!');
+    },
+    error: (err) => {
+      //this.themeService.showSnackbar('Error al procesar la venta. Inténtalo de nuevo.');
+      console.error('Error:', err);
+    }
+  });
+}
+
+
+
+updateProductStock() {
+  this.cartItems.forEach(item => {
+    const product = this.productos.find(p => p.id === item.id);
+    if (product) {
+      product.stock -= item.cantidad;
+    }
+  });
+}
+
+// Validar stock antes de procesar la venta
+private validateStock(): boolean {
+  return this.cartItems.every(item => {
+    const product = this.productos.find(p => p.id === item.id);
+    return product && (product.stock >= item.cantidad);
+  });
+}
 
 
 

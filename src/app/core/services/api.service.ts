@@ -1,20 +1,20 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CompleteSaleDto } from './CompleteSaleDto';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  
   private apiUrl = 'https://localhost:7262';
-
 
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private authService: AuthService
   ) { }
-
 
   // Obtener todos los productos
   getProducts(): Observable<any[]> {
@@ -36,8 +36,8 @@ export class ApiService {
     return this.http.delete(`${this.apiUrl}/api/Products/${id}`);
   }
 
-   // Obtener todas las categorías
-   getCategories(): Observable<any[]> {
+  // Obtener todas las categorías
+  getCategories(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/api/Categories`);
   }
 
@@ -56,6 +56,10 @@ export class ApiService {
     return this.http.delete(`${this.apiUrl}/api/Categories/${id}`);
   }
 
-  
+
+  completeSale(saleDto: CompleteSaleDto): Observable<any> {
+    return this.http.post(`${this.apiUrl}/api/sales/complete-sale`, saleDto);
+  }
+
 
 }
