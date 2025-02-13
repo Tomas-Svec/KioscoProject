@@ -24,10 +24,14 @@ export class ManageStockComponent implements OnInit {
   showProductForm = false; // Controla la visibilidad del formulario de productos
   currentCategory: any = {}; // Objeto para almacenar los datos de la categoría actual
   showModal = false; // Controla la visibilidad del modal general
+
   // Propiedades para el filtro y búsqueda
   selectedCategory: number | null = null; // ID de la categoría seleccionada
   searchTerm: string = ''; // Término de búsqueda por nombre
-  
+
+  // Propiedades para paginación
+  pageSize = 10; // Número de productos por página
+  currentPage = 1; // Página actual
 
   constructor(
     private apiService: ApiService,
@@ -40,10 +44,6 @@ export class ManageStockComponent implements OnInit {
     this.loadProducts(); // Cargar productos
     this.loadCategories(); // Cargar categorías
   }
-
-  
-
-  
 
   // Método para cargar productos desde el backend
   loadProducts(): void {
@@ -58,7 +58,6 @@ export class ManageStockComponent implements OnInit {
     );
   }
 
-  
   // Cargar categorías desde el backend
   loadCategories(): void {
     this.apiService.getCategories().subscribe(
@@ -71,7 +70,6 @@ export class ManageStockComponent implements OnInit {
       }
     );
   }
-  
 
   // Lógica para abrir y cerrar el modal general
   openModal() {
@@ -93,8 +91,6 @@ export class ManageStockComponent implements OnInit {
     this.showCategoryModal = false; // Cierra el modal de categorías
     this.currentCategory = {}; // Limpiar los datos de la categoría
   }
-
-  
 
   // Guardar una nueva categoría o actualizar una existente
   saveCategory(): void {
@@ -177,50 +173,68 @@ export class ManageStockComponent implements OnInit {
     return categoria ? categoria.nombre : 'Sin categoría';
   }
 
+  // Método para obtener los productos filtrados
+  get filteredProducts(): any[] {
+    let products = this.productos;
 
+    // Filtrar por categoría
+    if (this.selectedCategory !== null) {
+      products = products.filter((producto) => producto.categoriaId === this.selectedCategory);
+    }
 
- // Método para obtener los productos filtrados
- get filteredProducts(): any[] {
-  let products = this.productos;
-
-  console.log('Productos originales:', products);
-  console.log('Categoría seleccionada:', this.selectedCategory);
-
-  // Filtrar por categoría
-  if (this.selectedCategory !== null) { // Solo filtra si hay una categoría seleccionada
-    products = products.filter(producto => {
-      console.log(
-        'Comparando:',
-        'categoriaId:', producto.categoriaId,
-        'selectedCategory:', this.selectedCategory,
-        'Coinciden:', producto.categoriaId === this.selectedCategory
+    // Filtrar por nombre
+    if (this.searchTerm.trim() !== '') {
+      products = products.filter((producto) =>
+        producto.nombre.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
-      return producto.categoriaId === this.selectedCategory;
-    });
-  } else {
-    console.log('No se aplica filtro por categoría (Todas las categorías)');
+    }
+
+    return products;
   }
 
-  // Filtrar por nombre
-  if (this.searchTerm.trim() !== '') {
-    products = products.filter(producto =>
-      producto.nombre.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
+  // Método para obtener los productos paginados
+  get paginatedProducts(): any[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    return this.filteredProducts.slice(start, end);
   }
 
-  console.log('Productos filtrados:', products);
-  return products;
+  // Total de páginas
+  get totalPages(): number {
+    return Math.ceil(this.filteredProducts.length / this.pageSize);
+  }
+
+  // Ir a la primera página
+goToFirstPage(): void {
+  this.currentPage = 1;
 }
 
-
-// Método para limpiar todos los filtros
-clearFilters(): void {
-  this.selectedCategory = null; // Reinicia la categoría seleccionada
-  this.searchTerm = ''; // Limpia el término de búsqueda
-  console.log('Filtros limpiados');
-  this.cdr.detectChanges(); // Forzar detección de cambios
+// Ir a la página anterior
+goToPreviousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
 }
- 
+
+// Ir a la siguiente página
+goToNextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+  }
+}
+
+// Ir a la última página
+goToLastPage(): void {
+  this.currentPage = this.totalPages;
+}
+
+  // Método para limpiar todos los filtros
+  clearFilters(): void {
+    this.selectedCategory = null; // Reinicia la categoría seleccionada
+    this.searchTerm = ''; // Limpia el término de búsqueda
+    console.log('Filtros limpiados');
+    this.cdr.detectChanges(); // Forzar detección de cambios
+  }
 
   // Enviar el formulario de producto
   onSubmit(): void {
@@ -229,14 +243,13 @@ clearFilters(): void {
       alert('Por favor, completa todos los campos obligatorios.');
       return;
     }
-  
+
     // Validar que el precio sea mayor que 0
     if (this.selectedProduct.precio <= 0) {
       alert('El precio debe ser mayor que 0.');
       return;
     }
-  
-  
+
     // Si el producto tiene un ID, actualízalo; de lo contrario, créalo
     if (this.selectedProduct.id) {
       this.apiService.updateProduct(this.selectedProduct.id, this.selectedProduct).subscribe(
