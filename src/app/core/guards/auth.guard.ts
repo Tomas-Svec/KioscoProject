@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate {
       return true;
     } else if (!this.authService.isRefreshTokenExpired()) {
       // Intenta refrescar el token si el refresh token no ha expirado
-      this.authService.refreshToken(localStorage.getItem('refreshToken')!).subscribe(
+      this.authService.refreshToken().subscribe(
         (response) => {
           this.authService.saveUserData(response); // Guarda el nuevo token
           this.router.navigate(['/']); // Navega a la página principal

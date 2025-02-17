@@ -44,8 +44,7 @@ export class LoginComponent {
   onSubmit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.authService.login(this.email, this.password).subscribe({
-        next: (response) => {
-          this.authService.saveUserData(response);
+        next: () => {
           this.routeNavigator.navigateToDashboard(); // Navega al dashboard
         },
         error: (error) => {

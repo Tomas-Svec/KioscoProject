@@ -1,5 +1,5 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpEvent, HttpHandler, HttpHeaders, HttpRequest } from '@angular/common/http';
+import { catchError, Observable, switchMap, tap, throwError } from 'rxjs';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -25,18 +25,43 @@ export class AuthService {
   
 
   // Método para iniciar sesión
-  login(email: string, password: string): Observable<AuthResponse> {
+  login(email: string, password: string): Observable<any> {
     const loginData = { email, password };
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, loginData).pipe(
+    return this.http.post<any>(`${this.apiUrl}/auth/login`, loginData).pipe(
       tap((response) => {
-        this.saveUserData(response);
-        this.getCurrentUser().subscribe((user) => {
-          this.currentUser = user; // Actualiza la propiedad privada
-        });
+        this.saveUserData(response); // Llama internamente a saveUserData
       }),
       catchError(this.handleError)
     );
   }
+
+
+// Método para cargar el perfil del usuario
+loadCurrentUser(): void {
+  if (isPlatformBrowser(this.platformId)) {
+    const accessToken = this.getAccessToken();
+    if (accessToken) {
+      this.http.get<any>(`${this.apiUrl}/auth/profile`, {
+        headers: new HttpHeaders({
+          'Authorization': `Bearer ${accessToken}`
+        })
+      }).subscribe(
+        (user) => {
+          this.currentUser = user; // Actualiza currentUser
+          console.log('Usuario cargado:', user);
+        },
+        (error) => {
+          console.error('Error al cargar el perfil del usuario:', error);
+        }
+      );
+    }
+  }
+}
+
+// Método para obtener el usuario actual
+getCurrentUser(): any {
+  return this.currentUser;
+}
 
    // Método para registrar un nuevo usuario
   register(nombre: string, apellido: string, email: string, password: string, rol: string): Observable<any> {
@@ -66,26 +91,50 @@ isAuthenticated(): boolean {
 }
 
   // Guarda los tokens en el almacenamiento local
-  saveUserData(response: AuthResponse): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('accessToken', response.accessToken);
-      localStorage.setItem('refreshToken', response.refreshToken);
-      if (response.refreshTokenExpiry) {
-        localStorage.setItem('refreshTokenExpiry', response.refreshTokenExpiry.toString());
-      }
-    }
+  public saveUserData(response: any): void {
+    localStorage.setItem('accessToken', response.accessToken);
+    localStorage.setItem('refreshToken', response.refreshToken);
+    localStorage.setItem('refreshTokenExpiry', response.refreshTokenExpiry.toString());
   }
 
   // Método para refrescar el token
-  refreshToken(refreshToken: string): Observable<AuthResponse> {
-    const refreshTokenData = { refreshToken };
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/refresh-token`, refreshTokenData).pipe(
-      tap((response) => {
-        this.saveUserData(response);
-      }),
-      catchError(this.handleError)
-    );
+refreshToken(): Observable<any> {
+  const refreshToken = localStorage.getItem('refreshToken');
+  if (!refreshToken) {
+    throw new Error('No se encontró el refresh token.');
   }
+  return this.http.post<any>(`${this.apiUrl}/auth/refresh-token`, { refreshToken }).pipe(
+    tap((response) => {
+      this.saveUserData(response);
+    }),
+    catchError(this.handleError)
+  );
+}
+
+// Middleware para manejar tokens expirados
+intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  const token = this.getAccessToken();
+  if (token) {
+    request = request.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  return next.handle(request).pipe(
+    catchError((error) => {
+      if (error.status === 401) { // Token expirado
+        return this.refreshToken().pipe(
+          switchMap(() => next.handle(request))
+        );
+      }
+      throw error;
+    })
+  );
+}
+  
+
   // Método para verificar si el refresh token ha expirado
   isRefreshTokenExpired(): boolean {
     if (isPlatformBrowser(this.platformId)) {
@@ -98,25 +147,11 @@ isAuthenticated(): boolean {
     return true;
   }
 
-  // Método para obtener el perfil del usuario
-  getCurrentUser(): Observable<any> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${this.getAccessToken()}`
-      })
-    };
   
-    return this.http.get<any>(`${this.apiUrl}/auth/profile`, httpOptions).pipe(
-      catchError(this.handleError)
-    );
-  }
 
   // Obtener el token de acceso
-  private getAccessToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem('accessToken');
-    }
-    return null;
+  getAccessToken(): string | null {
+    return localStorage.getItem('accessToken');
   }
 
   // Manejo de errores HTTP

@@ -45,12 +45,9 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Carga el historial de ventas y otros datos necesarios
-    this.loadSalesHistory();
-    // Fecha la información del usuario al inicializar el componente
-    this.authService.getCurrentUser().subscribe(user => {
-      this.currentUser = user;
-    });
+    if (this.authService.isAuthenticated()) {
+      this.authService.loadCurrentUser(); // Carga el usuario si hay un token
+    }
   }
 
    // Método para agregar un producto al carrito
@@ -209,6 +206,12 @@ decrementQuantity(item: any): void {
   //Modal de venta:
  // Nuevo método para abrir el modal
  openConfirmSaleModal() {
+  if (!this.currentUser) {
+    console.error('No hay usuario autenticado.');
+    //this.routeNavigator.navigate(['/auth/login']); // Redirige al inicio de sesión
+    return;
+  }
+
   const saleData = {
     items: this.cartItems,
     total: this.total,
@@ -230,6 +233,11 @@ decrementQuantity(item: any): void {
 
 // Método para finalizar la venta
 finalizeSale() {
+  if (!this.validateStock()) {
+    alert('No hay suficiente stock para completar la venta.');
+    return;
+  }
+
   const completeSaleDto: CompleteSaleDto = {
     EmpleadoId: this.currentUser?.id || 0,
     Total: this.total,
@@ -241,18 +249,16 @@ finalizeSale() {
     }))
   };
 
-  // Llama al backend para procesar la venta
   this.apiService.completeSale(completeSaleDto).subscribe({
     next: (response) => {
       this.ventas.push(response);
       this.updateProductStock();
       this.cartItems = [];
       this.total = 0;
-      //this.themeService.showSnackbar('Venta finalizada con éxito!');
+      console.log('Venta finalizada con éxito:', response);
     },
     error: (err) => {
-      //this.themeService.showSnackbar('Error al procesar la venta. Inténtalo de nuevo.');
-      console.error('Error:', err);
+      console.error('Error al procesar la venta:', err);
     }
   });
 }
